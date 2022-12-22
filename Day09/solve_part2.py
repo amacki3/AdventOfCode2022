@@ -9,9 +9,8 @@ moveDict = {'U':np.array([0,1]),
             'R':np.array([1,0])}
 
 
-def make_move(head,tail,move):
+def update_tail(head,tail):
     #Make the head move and tail follow
-    head += moveDict[move]
     #Mpw get the difference in the tail to head pos
     delta = head-tail
     #Tail can only be either within 1 block, 2 blocks or diagonally smaller.
@@ -20,18 +19,18 @@ def make_move(head,tail,move):
     if magnitude >= 2:
         #tail += (delta/2)
         tail += np.array([np.sign(delta[0]),np.sign(delta[1])])
-    return head,tail
+    return tail
 
 #Set up initial conditions
-
-posHead = np.array([0,0])
-posTail = np.array([0,0])
+positions = [np.array([0,0]) for i in range(10)]
 
 visitedGridPositions = set([(0,0),])
 with open("input.txt","r") as f:
     for line in f:
         tokens = line.split()
         for i in range(int(tokens[1])):
-            posHead,posTail = make_move(posHead,posTail,tokens[0])
-            visitedGridPositions.add((posTail[0],posTail[1]))
+            positions[0] += moveDict[tokens[0]]
+            for j in range(9):
+                positions[j+1] = update_tail(positions[j],positions[j+1])
+            visitedGridPositions.add((positions[9][0],positions[9][1]))
 print(len(visitedGridPositions))
